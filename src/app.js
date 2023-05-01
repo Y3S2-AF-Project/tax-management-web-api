@@ -69,5 +69,5 @@ global.__basedir = __dirname
 const port = process.env.PORT || 4000
 
 app.listen(port, () => {
-  console.log(`Bashaway server successfully started on port ${port}`)
+  console.log(`Server successfully started on port ${port}`)
 })
