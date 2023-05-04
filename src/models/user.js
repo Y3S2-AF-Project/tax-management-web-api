@@ -19,9 +19,10 @@ const UserSchema = new mongoose.Schema(
       required: true,
       minlength: 8
     },
-    verification_code: {
+    refreshToken: {
       type: String,
-      required: false
+      required: true,
+      unique: true
     },
     is_verified: {
       type: Boolean,
@@ -44,6 +45,9 @@ const UserSchema = new mongoose.Schema(
       required: true
     },
   },
+  {
+    timestamps: true
+  }
 )
 
 UserSchema.plugin(aggregatePaginate)

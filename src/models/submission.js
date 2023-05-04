@@ -27,14 +27,17 @@ const SubmissionSchema = mongoose.Schema(
       required: false
     }
   },
+  {
+    timestamps: true
+  }
 )
+
+UserSchema.index({ createdAt: 1 })
 
 SubmissionSchema.plugin(mongoosePaginate)
 
-SubmissionSchema.index({ createdAt: 1 })
-
 const Submission = mongoose.model('Submission', SubmissionSchema)
 
-Submission.syncIndexes()
+User.syncIndexes()
 
 export default Submission
