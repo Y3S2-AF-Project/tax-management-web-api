@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { createUser, getOneUser, findOneAndUpdateUser } from '../repository/user'
 import { sendMail } from './email'
 
-export const authRegister = async ({ name, email, password, university, members }) => {
+export const authRegister = async ({ name, email, password,}) => {
   const encryptedPassword = await new Promise((resolve, reject) => {
     bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS), (err, hash) => {
       if (err) reject(err)
@@ -16,14 +16,26 @@ export const authRegister = async ({ name, email, password, university, members 
     email,
     password: encryptedPassword,
     verification_code: verification_code,
-    university,
-    members
   })
   await verifyMailTemplate(email, verification_code)
   return registeredUser
 }
 
 export const authLogin = async ({ email, password }) => {
+  const user = await getOneUser({ email }, true)
+  if (!user) return false
+  const isPasswordMatch = await new Promise((resolve, reject) => {
+    bcrypt.compare(password, user.password, (err, hash) => {
+      if (err) reject(err)
+      resolve(hash)
+    })
+  })
+  if (!isPasswordMatch) return false
+  delete user.password
+  return user
+}
+
+export const authLogout = async ({ email, password }) => {
   const user = await getOneUser({ email }, true)
   if (!user) return false
   const isPasswordMatch = await new Promise((resolve, reject) => {

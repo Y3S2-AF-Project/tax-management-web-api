@@ -2,15 +2,10 @@ import asyncHandler from '../middleware/async'
 import { authRegister, authLogin, updateVerificationStatus, authResendVerification, forgotPasswordEmail, resetPasswordFromEmail } from '../services/auth'
 import { getOneUser } from '../repository/user'
 import { makeResponse } from '../utils/response'
-import { sendTokenResponse } from '../utils/jwt'
+import { sendTokenResponse, generateAccessToken} from '../utils/jwt'
 const fs = require('fs')
 
-const registrationEnd = new Date(2022, 8, 30, 8, 0, 0)
-
 export const register = asyncHandler(async (req, res) => {
-  if (Date.now() >= registrationEnd.getTime()) {
-    return makeResponse({ res, status: 400, message: 'Registration closed.' })
-  }
   if (req.user) {
     return makeResponse({ res, status: 400, message: "You've already registered for an account." })
   }
@@ -96,4 +91,39 @@ export const resetPassword = asyncHandler(async (req, res) => {
     return makeResponse({ res, ...result })
   }
   return makeResponse({ res, message: 'Password reset successfully' })
+})
+
+export const token = asyncHandler(async (req, res) => {
+  const refreshToken = req.body.refreshToken
+
+  if (null == refreshToken) return makeResponse({ res, status: 400, message: 'No refresh token specified' })
+  
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) return makeResponse({ res, status:403, message: 'Invalid refresh token' })
+    const accessToken = generateAccessToken(user)
+    res.body = {accessToken: accessToken}
+    return makeResponse({res, message: 'Token refreshed successfully'});
+  })
+})
+
+export const logout = asyncHandler(async (req, res) => {
+  const user = await authLogin(req.body)
+  if (!user) {
+    return makeResponse({ res, status: 401, message: 'Invalid email or password' })
+  }
+  if (!user.is_verified) {
+    return makeResponse({
+      res,
+      status: 401,
+      message: 'Account not verified. Please check your email'
+    })
+  }
+  if (!user.is_active) {
+    return makeResponse({
+      res,
+      status: 401,
+      message: 'Your account has been deactivated. Please contact a bashaway administrator to resolve it'
+    })
+  }
+  return sendTokenResponse(res, user, 'User logged out successfully')
 })

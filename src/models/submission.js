@@ -32,12 +32,12 @@ const SubmissionSchema = mongoose.Schema(
   }
 )
 
-UserSchema.index({ createdAt: 1 })
+SubmissionSchema.index({ createdAt: 1 })
 
 SubmissionSchema.plugin(mongoosePaginate)
 
 const Submission = mongoose.model('Submission', SubmissionSchema)
 
-User.syncIndexes()
+Submission.syncIndexes()
 
 export default Submission

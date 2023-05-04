@@ -1,7 +1,7 @@
 import express from 'express'
 import { celebrate, Segments } from 'celebrate'
-import { login, register, current, verifyUser, resendVerification, forgotPassword, resetPassword } from '../controllers/auth'
-import { registerSchema, loginSchema, verifySchema, resendVerifyMailSchema, validUserResetPasswordSchema, resetPasswordSchema } from '../validations/user'
+import { login, register, current, verifyUser, resendVerification, forgotPassword, resetPassword, token } from '../controllers/auth'
+import { registerSchema, loginSchema, verifySchema, tokenSchema, resendVerifyMailSchema, validUserResetPasswordSchema, resetPasswordSchema } from '../validations/user'
 import { protect } from '../middleware/auth'
 import rateLimit from 'express-rate-limit'
 
@@ -15,6 +15,7 @@ const verifyEmailLimiter = rateLimit({
 })
 
 authRouter.post('/login', celebrate({ [Segments.BODY]: loginSchema }), login)
+authRouter.post('/token', celebrate({ [Segments.BODY]: tokenSchema }), token)
 authRouter.post('/register', celebrate({ [Segments.BODY]: registerSchema }), register)
 authRouter.get('/current', protect, current)
 authRouter.post('/verify', celebrate({ [Segments.BODY]: resendVerifyMailSchema }), verifyEmailLimiter, resendVerification)

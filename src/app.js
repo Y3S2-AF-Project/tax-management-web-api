@@ -1,4 +1,3 @@
-require('dotenv').config()
 import express from 'express'
 import compression from 'compression'
 import helmet from 'helmet'
@@ -10,6 +9,9 @@ import { isCelebrateError } from 'celebrate'
 import { makeResponse } from './utils/response'
 import logger from './utils/logger'
 import { queryMapper } from './middleware/query'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 const app = express()
 
