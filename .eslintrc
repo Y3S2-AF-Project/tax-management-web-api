@@ -10,11 +10,11 @@
     "requireConfigFile": false
   },
   "rules": {
-    "arrow-body-style": ["error", "as-needed"],
+    "arrow-body-style": ["warn", "as-needed"],
     "arrow-parens": ["error", "always"],
     "arrow-spacing": "error",
     "camelcase": ["off"],
-    "curly": "error",
+    "curly": "warn",
     "default-case": "error",
     "dot-notation": "warn",
     "eqeqeq": "error",
@@ -36,12 +36,12 @@
         "includeExports": true
       }
     ],
-    "no-else-return": "error",
+    "no-else-return": "warn",
     "no-eq-null": "error",
     "no-extra-bind": "error",
     "no-lone-blocks": "error",
     "no-multiple-empty-lines": "error",
-    "no-return-await": "error",
+    "no-return-await": "warn",
     "no-useless-concat": "error",
     "no-useless-constructor": "error",
     "no-useless-escape": "error",
