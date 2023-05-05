@@ -2,7 +2,7 @@ import asyncHandler from '../middleware/async'
 import { authRegister, authLogin, updateVerificationStatus, authResendVerification, forgotPasswordEmail, resetPasswordFromEmail } from '../services/auth'
 import { getOneUser } from '../repository/user'
 import { makeResponse } from '../utils/response'
-import { sendTokenResponse, generateAccessToken} from '../utils/jwt'
+import { sendTokenResponse, generateAccessToken } from '../utils/jwt'
 const fs = require('fs')
 
 export const register = asyncHandler(async (req, res) => {
@@ -97,12 +97,12 @@ export const token = asyncHandler(async (req, res) => {
   const refreshToken = req.body.refreshToken
 
   if (null == refreshToken) return makeResponse({ res, status: 400, message: 'No refresh token specified' })
-  
+
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return makeResponse({ res, status:403, message: 'Invalid refresh token' })
+    if (err) return makeResponse({ res, status: 403, message: 'Invalid refresh token' })
     const accessToken = generateAccessToken(user)
-    res.body = {accessToken: accessToken}
-    return makeResponse({res, message: 'Token refreshed successfully'});
+    res.body = { accessToken: accessToken }
+    return makeResponse({ res, message: 'Token refreshed successfully' })
   })
 })
 

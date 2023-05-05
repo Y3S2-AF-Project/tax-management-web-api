@@ -25,7 +25,9 @@ export const sendMail = async (email, templateName, replacements, subject, attac
   }
   return new Promise((resolve, reject) => {
     transport.sendMail(mailOptions, (error) => {
-      if (error) {reject(error)}
+      if (error) {
+        reject(error)
+      }
       resolve(true)
     })
   })

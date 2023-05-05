@@ -55,11 +55,15 @@ export const changePasswordService = async (user, oldPassword, newPassword) => {
       resolve(hash)
     })
   })
-  if (!isPasswordMatch) {return { status: 400, message: 'Invalid current password' }}
+  if (!isPasswordMatch) {
+    return { status: 400, message: 'Invalid current password' }
+  }
 
   const encryptedPassword = await new Promise((resolve, reject) => {
     bcrypt.hash(newPassword, parseInt(process.env.BCRYPT_SALT_ROUNDS), (err, hash) => {
-      if (err) {reject(err)}
+      if (err) {
+        reject(err)
+      }
       resolve(hash)
     })
   })
@@ -78,15 +82,18 @@ export const updateUserdetails = async (userId, user, userDetails) => {
 
   if (userDetails.name) {
     userData = await getOneUser({ name: userDetails.name }, false)
-    if (userData && userData?._id.toString() !== userId.toString()) {return { status: 422, message: 'Name is already taken' }}
+    if (userData && userData?._id.toString() !== userId.toString()) {
+      return { status: 422, message: 'Name is already taken' }
+    }
   }
 
   const updatedUser = await findOneAndUpdateUser({ _id: userId }, userDetails)
-  if (!updatedUser)
-    {return {
+  if (!updatedUser) {
+    return {
       status: 422,
       message: 'Invalid user ID'
-    }}
+    }
+  }
   return updatedUser
 }
 
@@ -95,7 +102,9 @@ export const addNewUser = async (userDetails) => {
 
   const encryptedPassword = await new Promise((resolve, reject) => {
     bcrypt.hash(genaratedPassword, parseInt(process.env.BCRYPT_SALT_ROUNDS), (err, hash) => {
-      if (err) {reject(err)}
+      if (err) {
+        reject(err)
+      }
       resolve(hash)
     })
   })
@@ -109,7 +118,9 @@ export const addNewUser = async (userDetails) => {
 
   let sendEmail
 
-  if (newUser) {sendEmail = await sendAdminPassword(userDetails.email, genaratedPassword)}
+  if (newUser) {
+    sendEmail = await sendAdminPassword(userDetails.email, genaratedPassword)
+  }
 
   if (!sendEmail) {
     await findOneAndRemoveUser({ email: userDetails.email })

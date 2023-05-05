@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { createUser, getOneUser, findOneAndUpdateUser } from '../repository/user'
 import { sendMail } from './email'
 
-export const authRegister = async ({ name, email, password,}) => {
+export const authRegister = async ({ name, email, password }) => {
   const encryptedPassword = await new Promise((resolve, reject) => {
     bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS), (err, hash) => {
       if (err) reject(err)
@@ -15,7 +15,7 @@ export const authRegister = async ({ name, email, password,}) => {
     name,
     email,
     password: encryptedPassword,
-    verification_code: verification_code,
+    verification_code: verification_code
   })
   await verifyMailTemplate(email, verification_code)
   return registeredUser

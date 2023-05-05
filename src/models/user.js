@@ -43,7 +43,7 @@ const UserSchema = new mongoose.Schema(
       enum: ['ADMIN', 'GROUP'],
       default: 'GROUP',
       required: true
-    },
+    }
   },
   {
     timestamps: true
