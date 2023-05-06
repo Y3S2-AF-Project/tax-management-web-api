@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose'
 import mongoosePaginate from 'mongoose-paginate-v2'
 
-const AdminSchema = new Schema(
+const EmployeeSchema = new Schema(
   {
     id: {
       type: String,
@@ -33,6 +33,10 @@ const AdminSchema = new Schema(
       type: String,
       required: false
     },
+    role: {
+      type: String,
+      required: true
+    },
     permissions: {
       type: [String],
       default: []
@@ -40,12 +44,12 @@ const AdminSchema = new Schema(
     addedBy: {
       type: Schema.Types.ObjectId,
       ref: 'Admin',
-      required: false
+      required: true
     },
     lastUpdatedBy: {
       type: Schema.Types.ObjectId,
       ref: 'Admin',
-      required: false
+      required: true
     },
     isActive: {
       type: Boolean,
@@ -67,25 +71,15 @@ const AdminSchema = new Schema(
       required: false
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 )
 
-AdminSchema.index({ createdAt: 1 })
+EmployeeSchema.index({ createdAt: 1 })
 
-AdminSchema.plugin(mongoosePaginate)
+EmployeeSchema.plugin(mongoosePaginate)
 
-const Admin = model('Admin', AdminSchema)
+const Employee = model('SystemEmployee', EmployeeSchema)
 
-Admin.syncIndexes()
-
-export default Admin
-
-//example object
-// {
-//   "firstName": "John",
-//   "lastName": "Doe",
-//   "email": "john.doe@gmail",
-//   "password": "password",
-//   "phone": "1234567890",
-//   "permissions": ["crate-admin", "view-admin", "update-admin", "delete-admin"]
-// }
+export default Employee

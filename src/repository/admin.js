@@ -126,7 +126,7 @@ export const getLastInsertedAdmin = async () => {
     })
 }
 
-export const AdminRepository = {
+const AdminRepository = {
   insertAdmin,
   getAdmins,
   getAdminById,

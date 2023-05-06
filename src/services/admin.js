@@ -58,13 +58,8 @@ export const insertAdmin = async (admin) => {
   const hashedPassword = await hashPassword(admin.password)
   const newAdmin = {
     id,
-    firstName: admin.firstName,
-    lastName: admin.lastName,
-    email: admin.email,
+    ...admin,
     password: hashedPassword,
-    phone: admin.phone,
-    permissions: admin.permissions,
-    addedBy: admin.addedBy,
     lastUpdatedBy: admin.addedBy
   }
   return await AdminRepository.insertAdmin(newAdmin)
@@ -96,6 +91,7 @@ export const updateAdminById = async (id, admin) => {
   const updatedAdmin = {
     firstName: admin.firstName,
     lastName: admin.lastName,
+    gender: admin.gender,
     email: admin.email,
     phone: admin.phone,
     permissions: admin.permissions,
@@ -132,6 +128,7 @@ export const login = async (email, password) => {
     id: admin.id,
     firstName: admin.firstName,
     lastName: admin.lastName,
+    gender: admin.gender,
     email: admin.email,
     phone: admin.phone,
     permissions: admin.permissions,
