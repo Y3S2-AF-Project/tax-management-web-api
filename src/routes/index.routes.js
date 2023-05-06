@@ -4,6 +4,7 @@ import userRouter from './user.routes'
 import submissionRouter from './submission.routes'
 import adminRouter from './admin.routes'
 import employeeRouter from './employee.routes'
+import taxAgentRouter from './taxAgent.routes'
 import { protect, adminProtect } from '../middleware/auth'
 
 const router = express.Router()
@@ -13,5 +14,6 @@ router.use('/submissions', protect, submissionRouter)
 router.use('/users', protect, userRouter)
 router.use('/admin', adminRouter)
 router.use('/employee', employeeRouter)
+router.use('/taxAgent', taxAgentRouter)
 
 export default router
