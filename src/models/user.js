@@ -21,8 +21,6 @@ const UserSchema = new mongoose.Schema(
     },
     refreshToken: {
       type: String,
-      required: true,
-      unique: true
     },
     is_verified: {
       type: Boolean,
@@ -40,8 +38,8 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['ADMIN', 'GROUP'],
-      default: 'GROUP',
+      enum: ['INDIVIDUAL', 'COOPERATE'],
+      default: 'INDIVIDUAL',
       required: true
     },
   },

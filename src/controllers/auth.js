@@ -27,20 +27,15 @@ export const login = asyncHandler(async (req, res) => {
   if (!user) {
     return makeResponse({ res, status: 401, message: 'Invalid email or password' })
   }
-  if (!user.is_verified) {
-    return makeResponse({
-      res,
-      status: 401,
-      message: 'Account not verified. Please check your email'
-    })
-  }
-  if (!user.is_active) {
-    return makeResponse({
-      res,
-      status: 401,
-      message: 'Your account has been deactivated. Please contact a bashaway administrator to resolve it'
-    })
-  }
+
+  // if (!user.is_verified) {
+  //   return makeResponse({
+  //     res,
+  //     status: 401,
+  //     message: 'Account not verified. Please check your email'
+  //   })
+  // }
+
   return sendTokenResponse(res, user, 'User logged in successfully')
 })
 

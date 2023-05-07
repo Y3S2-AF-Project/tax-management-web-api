@@ -10,14 +10,13 @@ export const authRegister = async ({ name, email, password,}) => {
       resolve(hash)
     })
   })
-  const verification_code = uuidv4()
+ // const verification_code = uuidv4()
   const registeredUser = await createUser({
     name,
     email,
     password: encryptedPassword,
-    verification_code: verification_code,
   })
-  await verifyMailTemplate(email, verification_code)
+  // await verifyMailTemplate(email, verification_code)
   return registeredUser
 }
 
@@ -55,17 +54,17 @@ export const verifyMailTemplate = async (email, verification_code) => {
   }
   const attachments = [
     {
-      filename: 'bashawayLogo',
-      path: __basedir + '/html/images/bashawayLogo.png',
-      cid: 'bashawayLogo'
+      filename: 'taxLogo',
+      path: __basedir + '/html/images/Logo.png',
+      cid: 'taxLogo'
     },
     {
-      filename: 'fossLogo',
-      path: __basedir + '/html/images/fossLogo.png',
-      cid: 'fossLogo'
+      filename: 'taxLogo',
+      path: __basedir + '/html/images/Logo.png',
+      cid: 'taxLogo'
     }
   ]
-  const subject = 'Welcome to the Bashaway'
+  const subject = 'Welcome to the TaxManager'
   await sendMail(email, 'verifyRegistration', replacements, subject, attachments)
   return true
 }
@@ -87,21 +86,21 @@ export const authResendVerification = async (email) => {
 
 export const resetPasswordMailTemplate = async (email, verification_code) => {
   const replacements = {
-    reset_url: `${process.env.FRONTEND_DOMAIN || 'https://portal.bashaway.sliitfoss.org'}/reset-password/${verification_code}`
+    reset_url: `${process.env.FRONTEND_DOMAIN || 'https://portal..org'}/reset-password/${verification_code}`
   }
   const attachments = [
     {
-      filename: 'bashawayLogo',
-      path: __basedir + '/html/images/bashawayLogo.png',
-      cid: 'bashawayLogo'
+      filename: 'Logo',
+      path: __basedir + '/html/images/Logo.png',
+      cid: 'taxLogo'
     },
     {
-      filename: 'fossLogo',
-      path: __basedir + '/html/images/fossLogo.png',
-      cid: 'fossLogo'
+      filename: 'taxLogo',
+      path: __basedir + '/html/images/Logo.png',
+      cid: 'taxLogo'
     }
   ]
-  const subject = 'Bashaway - Reset Account Password'
+  const subject = ' - Reset Account Password'
   await sendMail(email, 'resetPassword', replacements, subject, attachments)
   return true
 }

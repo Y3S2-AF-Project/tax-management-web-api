@@ -7,25 +7,25 @@ const SubmissionSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
-    },
-    question: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Question',
-      required: true
-    },
-    link: {
-      type: String,
-      required: true
-    },
-    score: {
+    },    
+    annualIncome: {
       type: Number,
-      required: false
+      required: true
     },
-    graded_by: {
+    incomeDocuments: {
+      type: [String],
+      required: true
+    },
+    reviewedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: false
-    }
+    },
+    status:{
+      type: String,
+      enum: ['SUBMITTED', 'MISSING_DOCUMENTS','ACCEPTED','FALSE_DOCUMENTS'],
+      default: 'SUBMITTED',
+      required: true
+    },
   },
   {
     timestamps: true
