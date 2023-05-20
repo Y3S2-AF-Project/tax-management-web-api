@@ -3,6 +3,7 @@ import AdminService from '../services/admin'
 import AdminEmailService from '../email/admin.emails'
 import { makeResponse } from '../utils/response'
 import generator from 'generate-password'
+import sha256 from 'crypto-js/sha256'
 
 const generatePassword = async () => {
   return generator.generate({
@@ -17,7 +18,7 @@ const generatePassword = async () => {
 
 export const create = asyncHandler(async (req, res) => {
   const password = await generatePassword()
-  req.body.password = password
+  req.body.password = sha256(password).toString()
   await AdminService.insertAdmin(req.body)
     .then(async (data) => {
       await AdminEmailService.sendGeneratedPassord(data, password)
@@ -88,6 +89,36 @@ export const refreshToken = asyncHandler(async (req, res) => {
     })
 })
 
+export const getTotpStatusById = asyncHandler(async (req, res) => {
+  await AdminService.getTotpStatusById(req.params.id)
+    .then((data) => {
+      return makeResponse({ res, status: 200, data, message: 'Status retrieved successfully' })
+    })
+    .catch((err) => {
+      return makeResponse({ res, status: 400, message: err.message })
+    })
+})
+
+export const chooseTOTPMethod = asyncHandler(async (req, res) => {
+  await AdminService.chooseTOTPMethod(req.params.id, req.body.method)
+    .then((data) => {
+      return makeResponse({ res, status: 200, data, message: 'Method chosen successfully' })
+    })
+    .catch((err) => {
+      return makeResponse({ res, status: 400, message: err.message })
+    })
+})
+
+export const verifyTOTPbyId = asyncHandler(async (req, res) => {
+  await AdminService.verifyTOTPbyId(req.params.id, req.body.token)
+    .then((data) => {
+      return makeResponse({ res, status: 200, data, message: 'Token verified successfully' })
+    })
+    .catch((err) => {
+      return makeResponse({ res, status: 400, message: err.message })
+    })
+})
+
 const AdminController = {
   create,
   view,
@@ -95,7 +126,10 @@ const AdminController = {
   updateById,
   deleteById,
   login,
-  refreshToken
+  refreshToken,
+  getTotpStatusById,
+  verifyTOTPbyId,
+  chooseTOTPMethod
 }
 
 export default AdminController
