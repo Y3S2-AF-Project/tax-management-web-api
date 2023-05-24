@@ -65,6 +65,15 @@ const AdminSchema = new Schema(
     avatar: {
       type: String,
       required: false
+    },
+    secret: {
+      type: String,
+      required: false
+    },
+    choosenOTPMethod: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   { timestamps: true }
@@ -79,13 +88,3 @@ const Admin = model('Admin', AdminSchema)
 Admin.syncIndexes()
 
 export default Admin
-
-//example object
-// {
-//   "firstName": "John",
-//   "lastName": "Doe",
-//   "email": "john.doe@gmail",
-//   "password": "password",
-//   "phone": "1234567890",
-//   "permissions": ["crate-admin", "view-admin", "update-admin", "delete-admin"]
-// }

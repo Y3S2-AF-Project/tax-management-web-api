@@ -1,7 +1,43 @@
 import AdminRepository from '../repository/admin'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import speakeasy from 'speakeasy'
+import QRCode from 'qrcode'
+import EncryptionService from '../encryption/encryption.service'
+import AdminEmailService from '../email/admin.emails'
 import 'dotenv/config'
+
+const getTOTPSecret = () => {
+  const secret = speakeasy.generateSecret({ length: 20 }).base32
+  return EncryptionService.encrypt(secret)
+}
+
+const decryptTOTPSecret = (secret) => {
+  return EncryptionService.decrypt(secret)
+}
+
+const generateTOTP = (secret) => {
+  return speakeasy.totp({ secret, encoding: 'base32' })
+}
+
+const generateQRCode = async (secret) => {
+  const otpauthURL = speakeasy.otpauthURL({
+    secret,
+    label: 'Tax Management System',
+    issuer: 'Tax Management System',
+    encoding: 'base32'
+  })
+  return await QRCode.toDataURL(otpauthURL)
+}
+
+const verifyTOTP = (secret, token) => {
+  return speakeasy.totp.verify({
+    secret: secret,
+    encoding: 'base32',
+    token: token,
+    window: 10
+  })
+}
 
 const generateId = async () => {
   const lastInsertedAdmin = await AdminRepository.getLastInsertedAdmin()
@@ -56,11 +92,13 @@ export const insertAdmin = async (admin) => {
   }
   const id = await generateId()
   const hashedPassword = await hashPassword(admin.password)
+  const secret = getTOTPSecret()
   const newAdmin = {
     id,
     ...admin,
     password: hashedPassword,
-    lastUpdatedBy: admin.addedBy
+    lastUpdatedBy: admin.addedBy,
+    secret
   }
   return await AdminRepository.insertAdmin(newAdmin)
     .then((result) => {
@@ -121,21 +159,14 @@ export const login = async (email, password) => {
   if (!isMatch) {
     throw new Error('Invalid email or password')
   }
-  const accessToken = await generateToken(admin)
-  const refreshToken = await generateRefreshToken(admin)
   const response = {
     _id: admin._id,
     id: admin.id,
     firstName: admin.firstName,
     lastName: admin.lastName,
-    gender: admin.gender,
     email: admin.email,
     phone: admin.phone,
-    permissions: admin.permissions,
-    avatar: admin.avatar,
-    isFirstLogin: admin.isFirstLogin,
-    accessToken,
-    refreshToken
+    isFirstLogin: admin.isFirstLogin
   }
   return response
 }
@@ -155,6 +186,73 @@ export const refreshToken = async (refreshToken) => {
   return response
 }
 
+const getTotpStatusById = async (id) => {
+  const admin = await AdminRepository.getAdminById(id)
+  if (admin) {
+    if (admin.isFirstLogin) {
+      return { isFirstTime: true }
+    }
+    if (admin.choosenOTPMethod === 'email') {
+      AdminEmailService.sendOTP(admin, generateTOTP(decryptTOTPSecret(admin.secret)))
+    }
+    return { isFirstTime: false, choosenOTPMethod: admin.choosenOTPMethod }
+  }
+  throw new Error('Invalid admin id')
+}
+
+const verifyTOTPbyId = async (id, token) => {
+  const admin = await AdminRepository.getAdminById(id)
+  if (admin) {
+    const verified = verifyTOTP(decryptTOTPSecret(admin.secret), token)
+    if (verified) {
+      const accessToken = generateToken(admin)
+      const refreshToken = generateRefreshToken(admin)
+      const response = {
+        _id: admin._id,
+        id: admin.id,
+        firstName: admin.firstName,
+        lastName: admin.lastName,
+        gender: admin.gender,
+        email: admin.email,
+        phone: admin.phone,
+        permissions: admin.permissions,
+        avatar: admin.avatar,
+        isFirstLogin: admin.isFirstLogin,
+        accessToken,
+        refreshToken,
+        isTOTPVerified: true
+      }
+      await AdminEmailService.sendLoginAlert(admin)
+      return response
+    }
+    throw new Error('Invalid token')
+  } else {
+    throw new Error('Invalid admin id')
+  }
+}
+
+const chooseTOTPMethod = async (id, method) => {
+  const admin = {
+    choosenOTPMethod: method,
+    isFirstLogin: false
+  }
+  return await AdminRepository.updateAdminById(id, admin)
+    .then(async (data) => {
+      const secretDecrypted = decryptTOTPSecret(data.secret)
+      if (method === 'email') {
+        AdminEmailService.sendOTP(data, generateTOTP(secretDecrypted))
+        return { choosenMethod: method }
+      } else if (method === 'app') {
+        const qrCode = await generateQRCode(secretDecrypted)
+        return { qrCode: qrCode, choosenMethod: method }
+      }
+    })
+    .catch((err) => {
+      logger.error(`An error occurred when updating admin by id - err: ${err.message}`)
+      throw err
+    })
+}
+
 const AdminService = {
   insertAdmin,
   getAdmins,
@@ -164,7 +262,10 @@ const AdminService = {
   getPermissionsByAdminId,
   updatePermissionsByAdminId,
   login,
-  refreshToken
+  refreshToken,
+  getTotpStatusById,
+  verifyTOTPbyId,
+  chooseTOTPMethod
 }
 
 export default AdminService
