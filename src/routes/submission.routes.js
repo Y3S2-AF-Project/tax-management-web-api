@@ -7,8 +7,8 @@ import { submissionIdSchema, submissionViewSchema, submissionCreateSchema } from
 
 const submissionRouter = express.Router()
 
-submissionRouter.post('/', celebrate({ [Segments.BODY]: submissionCreateSchema }), create)
+submissionRouter.post('/', create)
 submissionRouter.get('/', celebrate({ [Segments.QUERY]: submissionViewSchema }), view)
-submissionRouter.put('/:id', celebrate({ [Segments.PARAMS]: submissionIdSchema }), adminProtect, grade)
+submissionRouter.put('/:id', celebrate({ [Segments.PARAMS]: submissionIdSchema }))
 
 export default submissionRouter

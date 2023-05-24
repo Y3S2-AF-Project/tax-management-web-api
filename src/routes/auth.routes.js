@@ -16,7 +16,7 @@ const verifyEmailLimiter = rateLimit({
 
 authRouter.post('/login', celebrate({ [Segments.BODY]: loginSchema }), login)
 authRouter.post('/token', celebrate({ [Segments.BODY]: tokenSchema }), token)
-authRouter.post('/register', celebrate({ [Segments.BODY]: registerSchema }), register)
+authRouter.post('/register', register)
 authRouter.get('/current', protect, current)
 authRouter.post('/verify', celebrate({ [Segments.BODY]: resendVerifyMailSchema }), verifyEmailLimiter, resendVerification)
 authRouter.get('/verify/:verification_code', celebrate({ [Segments.PARAMS]: verifySchema }), verifyUser)

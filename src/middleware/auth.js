@@ -21,3 +21,13 @@ export const adminProtect = asyncHandler(async (req, res, next) => {
   if (req.user.role !== 'ADMIN') return makeResponse({ res, status: 403, message: 'Unauthorized' })
   next()
 })
+
+export const individualProtect = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== 'INDIVIDUAL') return makeResponse({ res, status: 403, message: 'Unauthorized' })
+  next()
+})
+
+export const cooperateProtect = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== 'COOPERATE') return makeResponse({ res, status: 403, message: 'Unauthorized' })
+  next()
+})

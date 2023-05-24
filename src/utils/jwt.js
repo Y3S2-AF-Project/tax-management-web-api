@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const sendTokenResponse = async (res, user, message) => {
   const accessToken = generateAccessToken(user)
@@ -24,7 +26,7 @@ export const sendRefreshTokenResponse = async (token) => {
 
 export const generateAccessToken = (user) => {
   return jwt.sign({ data: user }, process.env.JWT_ACCESS_TOKEN_SECRET, {
-    expiresIn: `${process.env.JWT_EXPIRE}d`
+    expiresIn: `${process.env.JWT_EXPIRE}`
   })
 }
 
